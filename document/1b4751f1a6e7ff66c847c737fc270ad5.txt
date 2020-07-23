@@ -1,0 +1,11 @@
+CHROME
+
+- inspect - audit
+- sesuaikan kebutuhan (fix 400 x 400 / else)
+- compress image (png-jpg)
+- pindah aset ke cdn
+- caching
+
+tools - web based
+- dev.web
+- squoosh.app
