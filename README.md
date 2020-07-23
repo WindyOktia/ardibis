@@ -2,7 +2,7 @@
 Proyek Pembuatan E-arsip Fakultas Bisnis UKDW
 
 >Link Demo
-* e-arsip.idebareng.com
+* [Web Demo](http://e-arsip.idebareng.com/) 
 * username : superadmin
 * pass : superadmin
 
