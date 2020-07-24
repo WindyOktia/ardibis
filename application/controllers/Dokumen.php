@@ -111,6 +111,8 @@ class Dokumen extends CI_Controller{
 
         if($this->roleVerification($access)){
             $this->load->view('dokumen/dashboard/dashboard',$data);
+        }else{
+            $this->load->view('dokumen/general');
         }
 
         $this->load->view('part/footer');
@@ -330,7 +332,7 @@ class Dokumen extends CI_Controller{
     {
         $roleAcc="sdm";
         $this->roleRedirect($roleAcc);
-        
+
         $this->header();
         $this->load->view('dokumen/sdm/sdm');
         $this->load->view('part/footer');

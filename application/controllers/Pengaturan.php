@@ -22,9 +22,43 @@ class Pengaturan extends CI_Controller{
     public function index()
     {
         $data['user']= $this->pengaturan->getUser();
+        $data['role']= $this->pengaturan->getRole();
         $this->header();
         $this->load->view('pengaturan/pengguna',$data);
         $this->load->view('part/footer');
+    }
+
+    public function addUser()
+    {
+        $insert=$this->pengaturan->addUser();
+        if($insert){
+            $this->session->set_flashdata('success', 'Data Ditambahkan');
+        }else{
+            $this->session->set_flashdata('error', 'Data gagal ditambahkan');
+        }
+        redirect('pengaturan/');
+    }
+
+    public function deleteUser($id)
+    {
+        $delete=$this->pengaturan->deleteUser($id);
+        if($delete>0){
+            $this->session->set_flashdata('success', 'Data Dihapus');
+        }else{
+            $this->session->set_flashdata('error', 'Data Gagal Dihapus');
+        }
+        redirect('pengaturan/');
+    }
+
+    public function updateUser()
+    {
+        $edit=$this->pengaturan->updateUser();
+        if($edit){
+            $this->session->set_flashdata('success', 'Data Diubah');
+        }else{
+            $this->session->set_flashdata('error', 'Data gagal diubah / sudah ada');
+        }
+        redirect('pengaturan/');
     }
 
     public function dosen()
@@ -219,14 +253,5 @@ class Pengaturan extends CI_Controller{
         echo $cek->num_rows();
     }
 
-    public function addUser()
-    {
-        $insert=$this->pengaturan->addUser();
-        if($insert){
-            $this->session->set_flashdata('success', 'Data Ditambahkan');
-        }else{
-            $this->session->set_flashdata('error', 'Data gagal ditambahkan');
-        }
-        redirect('pengaturan/');
-    }
+    
 }

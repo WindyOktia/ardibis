@@ -62,8 +62,8 @@
                      <li class="dropdown dropdown-user nav-item">
                         <a class="dropdown-toggle nav-link dropdown-user-link" href="#" data-toggle="dropdown"><span class="user-name"><?=$this->session->userdata('nama')?></span></a>
                         <div class="dropdown-menu dropdown-menu-right">
-                           <a class="dropdown-item" href="user-profile.html"><i class="ft-user"></i> Edit Profil</a>
-                           <div class="dropdown-divider"></div>
+                           <!-- <a class="dropdown-item" href="user-profile.html"><i class="ft-user"></i> Edit Profil</a> -->
+                           <!-- <div class="dropdown-divider"></div> -->
                            <a class="dropdown-item" href="<?=base_url('login/logout')?>"><i class="ft-power"></i> Logout</a>
                         </div>
                      </li>

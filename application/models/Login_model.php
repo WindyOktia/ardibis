@@ -5,6 +5,7 @@ class Login_model extends CI_Model
     {   
         $this->db->where('username',$user);
         $this->db->where('password',$pass);
+        $this->db->where('status','1');
         $result = $this->db->get('user',1);
         return $result;
     }

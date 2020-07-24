@@ -129,6 +129,42 @@ class Pengaturan_model extends CI_Model
         return $this->db->get_where('user',['id_user !='=>1])->result_array();
     }
 
+    public function getRole()
+    {
+        return $this->db->get_where('role',['id_user !='=>1])->result_array();
+    }
+
+    public function deleteUser($id)
+    {
+        $this->db->delete('user',['id_user'=>$id]);
+        return $this->db->affected_rows();
+    }
+
+    public function updateUser()
+    {
+        // $akses= $_POST['akses'];
+
+        // $this->db->trans_start();
+        //     $this->db_set('nama',$_POST['nama']);
+        //     $this->db_set('password',$_POST['password']);
+
+        //     $this->db->insert('user', $data);
+
+        //     $package_id = $this->db->insert_id();
+
+        //     $result = array();
+        //         foreach($akses AS $key => $val){
+        //             $result[] = array(
+        //             'id_user'  	=> $package_id,
+        //             'role'  	=> $_POST['akses'][$key]
+        //             );
+        //         }      
+        //     //MULTIPLE INSERT TO DETAIL TABLE
+        //     $this->db->insert_batch('role', $result);
+        // $this->db->trans_complete();
+        // return TRUE;
+    }
+
     public function addMatakuliah()
     {
         $cek= $this->db->get_where('matakuliah',['kode_matakuliah'=>$_POST['kode']]);
