@@ -14,7 +14,25 @@ class Dokumen extends CI_Controller{
         }
     }
 
+    // Note for developer
+        // by: Windy Oktia - Current Project Developer ~~ github.com/WindyOktia
+        // Proyek E-arsip Fakultas Bisnis UKDW masih terus dalam tahap pengembangan, berikut adalah dokumentasi untuk membantu proses development :
+        // Kode Hak Akses :
+        // 1  : Pendidikan dan Pengajaran
+        // 2  : Penelitian
+        // 3  : Publikasi
+        // 4  : Pengabdian pada Masyarakat
+        // 5  : Kegiatan Penunjang Dosen
+        // 6  : Kerjasama
+        // 7  : SDM 
+        // 8  : Aset 
+        // 9  : Rencana Fakultas
+        // 10 : Surat Masuk
+        // 11 : Surat Keluar 
 
+        // 97 : Admin Sistem
+
+    // end of note
    
     // general access and restriction
     public function header()
@@ -97,6 +115,61 @@ class Dokumen extends CI_Controller{
         };
     }
 
+    public function generalUpload($id,$code,$backid)
+    {
+        $config['upload_path']          = './document/priv/';
+		$config['allowed_types']        = '*';
+		$config['max_size']             = 5000;
+		$config['encrypt_name'] 		= true;
+		$this->load->library('upload',$config);
+		$judul = $this->input->post('judul');
+        $jumlah_berkas = count($_FILES['arsip']['name']);
+        
+		for($i = 0; $i < $jumlah_berkas;$i++)
+		{
+            if(!empty($_FILES['arsip']['name'][$i])){
+ 
+				$_FILES['file']['name'] = $_FILES['arsip']['name'][$i];
+				$_FILES['file']['type'] = $_FILES['arsip']['type'][$i];
+				$_FILES['file']['tmp_name'] = $_FILES['arsip']['tmp_name'][$i];
+				$_FILES['file']['error'] = $_FILES['arsip']['error'][$i];
+				$_FILES['file']['size'] = $_FILES['arsip']['size'][$i];
+	   
+				if($this->upload->do_upload('file')){
+					
+					$uploadData = $this->upload->data();
+					$data['code_id'] = $code.'_'.$id;
+					$data['nama_dokumen'] = $judul[$i];
+					$data['link_file'] = $uploadData['file_name'];
+					$data['tipe'] = $uploadData['file_ext'];
+                    $this->db->insert('trans_document',$data);
+                    $this->session->set_flashdata('success', 'Dokumen berhasil ditambahkan');
+				}else{
+                    $this->session->set_flashdata('error', 'Dokumen gagal ditambah');
+                }
+			}
+        }
+        
+        redirect('dokumen/'.$backid);
+    }
+
+    public function downloadDocument($file)
+    {
+        $this->load->helper('download');
+        force_download(FCPATH.'/document/priv/'.$file, null);
+    }
+
+    public function deleteDocument($id,$backlink, $backid)
+    {
+        $delete=$this->dokumen->generalDeleteDoc($id);
+        if($delete>0){
+            $this->session->set_flashdata('success', 'Data Dihapus');
+        }else{
+            $this->session->set_flashdata('error', 'Data Gagal Dihapus');
+        }
+        redirect('dokumen/'.$backlink.'/'.$backid);
+    }
+
     // end of general access and restriction
 
     // dashboard
@@ -129,8 +202,10 @@ class Dokumen extends CI_Controller{
         $roleAcc="pendidikan";
         $this->roleRedirect($roleAcc);
 
+        $data['pendidikan']=$this->dokumen->getPendidikan();
+        
         $this->header();
-        $this->load->view('dokumen/pendidikan/pendidikan');
+        $this->load->view('dokumen/pendidikan/pendidikan',$data);
         $this->load->view('part/footer');
     }
 
@@ -141,21 +216,33 @@ class Dokumen extends CI_Controller{
 
         $data['dosen']=$this->pengaturan->getDosen();
         $data['matakuliah']=$this->pengaturan->getMatakuliah();
+
         $this->header();
-        if($this->accPendidikan()){
-            $this->load->view('dokumen/pendidikan/add',$data);
-        }
+        $this->load->view('dokumen/pendidikan/add',$data);
         $this->load->view('part/footer');
     }
 
-    public function detailPendidikan()
+    public function detailPendidikan($id)
     {
         $roleAcc="pendidikan";
         $this->roleRedirect($roleAcc);
 
+        $code = '1';
+
+        $data['pendidikan']=$this->dokumen->getPendidikanID($id);
+        $data['document']=$this->dokumen->getGeneralDoc($code, $id);
+
         $this->header();
-        $this->load->view('dokumen/pendidikan/detail');
+        $this->load->view('dokumen/pendidikan/detail',$data);
         $this->load->view('part/footer');
+    }
+
+    public function do_addPendidikan()
+    {
+        $id= $this->dokumen->addPendidikan();
+        $code='1'; //pendidikan
+        $backid='pendidikan'; // link redirect
+        $this->generalUpload($id,$code,$backid);
     }
 
     // end of pendidikan
@@ -168,7 +255,9 @@ class Dokumen extends CI_Controller{
         $this->roleRedirect($roleAcc);
 
         $this->header();
-        $this->load->view('dokumen/penelitian/penelitian');
+
+        $data['penelitian']= $this->dokumen->getPenelitian();
+        $this->load->view('dokumen/penelitian/penelitian',$data);
         $this->load->view('part/footer');
     }
 
@@ -178,18 +267,54 @@ class Dokumen extends CI_Controller{
         $this->roleRedirect($roleAcc);
 
         $this->header();
-        $this->load->view('dokumen/penelitian/add');
+
+        $data['dosen']= $this->pengaturan->getDosen();
+        $this->load->view('dokumen/penelitian/add',$data);
         $this->load->view('part/footer');
     }
 
-    public function detailPenelitian()
+    public function detailPenelitian($id)
     {
         $roleAcc="penelitian";
         $this->roleRedirect($roleAcc);
 
+        $code = '2';
+
         $this->header();
-        $this->load->view('dokumen/penelitian/detail');
+
+        $data['penelitian']= $this->dokumen->getPenelitianID($id);
+        $data['document']=$this->dokumen->getGeneralDoc($code, $id);
+        $this->load->view('dokumen/penelitian/detail',$data);
         $this->load->view('part/footer');
+    }
+
+    public function do_addPenelitian()
+    {
+        if($_POST['anggota']){
+            $arr_anggota = array();
+            foreach ($_POST['anggota'] as $key => $value) {
+              $arr_anggota[$key]['anggota'] =  $_POST['anggota'][$key];
+              $arr_anggota[$key]['no_identitas'] =  $_POST['no_identitas'][$key];
+              $arr_anggota[$key]['nama_anggota'] = $_POST['nama_anggota'][$key];
+              $arr_anggota[$key]['keterangan'] = $_POST['keterangan'][$key];
+            }
+            $serial_anggota = serialize($arr_anggota);
+        }else{
+            $serial_anggota="no_data";
+        }
+
+        $arr_dana = array();
+        foreach ($_POST['sumber_dana'] as $key => $value) {
+          $arr_dana[$key]['sumber_dana'] =  $_POST['sumber_dana'][$key];
+          $arr_dana[$key]['jumlah'] = $_POST['jumlah'][$key];
+        }
+        $serial_dana = serialize($arr_dana);
+
+        $id= $this->dokumen->addPenelitian($serial_anggota, $serial_dana);
+
+        $code='2'; //penelitian
+        $backid='penelitian'; // link redirect
+        $this->generalUpload($id,$code,$backid);
     }
 
     // end of penelitian
@@ -202,7 +327,9 @@ class Dokumen extends CI_Controller{
         $this->roleRedirect($roleAcc);
 
         $this->header();
-        $this->load->view('dokumen/publikasi/publikasi');
+
+        $data['publikasi']=$this->dokumen->getPublikasi();
+        $this->load->view('dokumen/publikasi/publikasi',$data);
         $this->load->view('part/footer');
     }
 
@@ -212,18 +339,47 @@ class Dokumen extends CI_Controller{
         $this->roleRedirect($roleAcc);
 
         $this->header();
-        $this->load->view('dokumen/publikasi/add');
+
+        $data['dosen']= $this->pengaturan->getDosen();
+        $this->load->view('dokumen/publikasi/add',$data);
         $this->load->view('part/footer');
     }
 
-    public function detailPublikasi()
+    public function detailPublikasi($id)
     {
         $roleAcc="publikasi";
         $this->roleRedirect($roleAcc);
 
         $this->header();
-        $this->load->view('dokumen/publikasi/detail');
+
+        $code='3';
+        
+        $data['publikasi']=$this->dokumen->getPublikasiID($id);
+        $data['document']=$this->dokumen->getGeneralDoc($code, $id);
+        $this->load->view('dokumen/publikasi/detail',$data);
         $this->load->view('part/footer');
+    }
+
+    public function do_addPublikasi()
+    {
+        if($_POST['anggota']){
+            $arr_anggota = array();
+            foreach ($_POST['anggota'] as $key => $value) {
+              $arr_anggota[$key]['anggota'] =  $_POST['anggota'][$key];
+              $arr_anggota[$key]['no_identitas'] =  $_POST['no_identitas'][$key];
+              $arr_anggota[$key]['nama_anggota'] = $_POST['nama_anggota'][$key];
+              $arr_anggota[$key]['keterangan'] = $_POST['keterangan'][$key];
+            }
+            $serial_anggota = serialize($arr_anggota);
+        }else{
+            $serial_anggota="no_data";
+        }
+
+        $id= $this->dokumen->addPublikasi($serial_anggota);
+
+        $code='3'; //publikasi
+        $backid='publikasi'; // link redirect
+        $this->generalUpload($id,$code,$backid);
     }
 
     // end of publikasi
@@ -235,7 +391,8 @@ class Dokumen extends CI_Controller{
         $this->roleRedirect($roleAcc);
 
         $this->header();
-        $this->load->view('dokumen/pengabdian/pengabdian');
+        $data['pengabdian']= $this->dokumen->getPengabdian();
+        $this->load->view('dokumen/pengabdian/pengabdian',$data);
         $this->load->view('part/footer');
     }
 
@@ -245,18 +402,52 @@ class Dokumen extends CI_Controller{
         $this->roleRedirect($roleAcc);
 
         $this->header();
-        $this->load->view('dokumen/pengabdian/add');
+        $data['dosen']= $this->pengaturan->getDosen();
+        $this->load->view('dokumen/pengabdian/add',$data);
         $this->load->view('part/footer');
     }
 
-    public function detailPengabdian()
+    public function detailPengabdian($id)
     {
         $roleAcc="pengabdian";
         $this->roleRedirect($roleAcc);
 
         $this->header();
-        $this->load->view('dokumen/pengabdian/detail');
+
+        $code="4";
+        $data['pengabdian']= $this->dokumen->getPengabdianID($id);
+        $data['document']=$this->dokumen->getGeneralDoc($code, $id);
+        $this->load->view('dokumen/pengabdian/detail',$data);
         $this->load->view('part/footer');
+    }
+
+    public function do_addPengabdian()
+    {
+        if($_POST['anggota']){
+            $arr_anggota = array();
+            foreach ($_POST['anggota'] as $key => $value) {
+              $arr_anggota[$key]['anggota'] =  $_POST['anggota'][$key];
+              $arr_anggota[$key]['no_identitas'] =  $_POST['no_identitas'][$key];
+              $arr_anggota[$key]['nama_anggota'] = $_POST['nama_anggota'][$key];
+              $arr_anggota[$key]['keterangan'] = $_POST['keterangan'][$key];
+            }
+            $serial_anggota = serialize($arr_anggota);
+        }else{
+            $serial_anggota="no_data";
+        }
+
+        $arr_dana = array();
+        foreach ($_POST['sumber_dana'] as $key => $value) {
+          $arr_dana[$key]['sumber_dana'] =  $_POST['sumber_dana'][$key];
+          $arr_dana[$key]['jumlah'] = $_POST['jumlah'][$key];
+        }
+        $serial_dana = serialize($arr_dana);
+
+        $id= $this->dokumen->addPengabdian($serial_anggota, $serial_dana);
+
+        $code='4'; //penelitian
+        $backid='pengabdian'; // link redirect
+        $this->generalUpload($id,$code,$backid);
     }
 
     // end of pengabdian
@@ -558,6 +749,5 @@ class Dokumen extends CI_Controller{
     {
         $this->load->helper('download');
         force_download(FCPATH.'/document/'.$file, null);
-        // force_download('/document/b2005185d2c451b359a709ec208e2917.png', NULL);
     }
 }

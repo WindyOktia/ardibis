@@ -7,32 +7,42 @@
             <thead class="thead-dark">
                 <tr>
                     <th>No</th>
-                    <th>NIP</th>
-                    <th>Nama</th>
+                    <!-- <th>NIP</th> -->
+                    <!-- <th>NIDN</th> -->
+                    <th>Nama Dosen</th>
                     <th>No Sertifikasi</th>
                     <th>Pendidikan</th>
                     <th>Keahlian</th>
+                    <th>Tahun Akademik</th>
                     <th>Semester</th>
                     <th>Matakuliah</th>
-                    <th>RPS</th>
-                    <th>RPP</th>
                     <th>Detail</th>
                 </tr>
             </thead>
             <tbody>
+            <?php $i=1; foreach($pendidikan as $pend):?>
                 <tr>
-                    <td>1</td>
-                    <td>1234</td>
-                    <td>John Doe</td>
-                    <td>1432</td>
-                    <td>S2</td>
-                    <td>Lorem</td>
-                    <td>Lorem</td>
-                    <td>Lorem</td>
-                    <td>Lorem</td>
-                    <td>Lorem</td>
-                    <td><a href="<?=base_url('dokumen/detailPendidikan')?>" class="btn btn-sm btn-info">detail</a></td>
+                    <td><?=$i++?></td>
+                    <!-- <td><?= $pend['nip']?></td> -->
+                    <!-- <td><?= $pend['nidn']?></td> -->
+                    <td><?= $pend['nama_dosen']?></td>
+                    <td><?= $pend['no_sertifikasi']?></td>
+                    <td><?php 
+                        $arr = unserialize($pend['pendidikan']);
+
+                        foreach($arr as $didik){
+                            echo $didik.', ';
+                        }
+                    
+                        ?>
+                    </td>
+                    <td><?= $pend['keahlian']?></td>
+                    <td><?= $pend['tahun_akademik']?></td>
+                    <td><?php if($pend['semester']=='1'){echo 'Ganjil';}else{echo 'Genap';};?></td>
+                    <td><?= $pend['nama_matakuliah']?></td>
+                    <td><a href="<?=base_url('dokumen/detailPendidikan')?>/<?=$pend['id_doc_pendidikan']?>" target="_blank" class="btn btn-sm btn-info">detail</a></td>
                 </tr>
+            <?php endforeach?>
             </tbody>
             
         </table>

@@ -7,32 +7,28 @@
             <thead class="thead-dark">
                 <tr>
                     <th>No</th>
-                    <th>NIP</th>
-                    <th>Nama</th>
-                    <th>No Sertifikasi</th>
-                    <th>Pendidikan</th>
-                    <th>Keahlian</th>
+                    <th>Jenis Publikasi</th>
+                    <th>Tema Publikasi</th>
+                    <th>Nama Dosen</th>
+                    <th>Judul Kegiatan</th>
+                    <th>Tahun Akademik</th>
                     <th>Semester</th>
-                    <th>Matakuliah</th>
-                    <th>RPS</th>
-                    <th>RPP</th>
                     <th>Detail</th>
                 </tr>
             </thead>
             <tbody>
+            <?php $i=1; foreach($publikasi as $pub):?>
                 <tr>
-                    <td>1</td>
-                    <td>1234</td>
-                    <td>John Doe</td>
-                    <td>1432</td>
-                    <td>S2</td>
-                    <td>Lorem</td>
-                    <td>Lorem</td>
-                    <td>Lorem</td>
-                    <td>Lorem</td>
-                    <td>Lorem</td>
-                    <td><a href="<?=base_url('dokumen/detailPublikasi')?>" class="btn btn-sm btn-info">detail</a></td>
+                    <td><?=$i++?></td>
+                    <td><?= $pub['jenis_publikasi']?></td>
+                    <td><?= $pub['tema_publikasi']?></td>
+                    <td><?= $pub['nama_dosen']?></td>
+                    <td><?= $pub['judul_kegiatan']?></td>
+                    <td><?= $pub['tahun_akademik']?></td>
+                    <td><?php if($pub['semester']=='2'){echo 'Genap';}else{echo 'Ganjil' ;};?></td>
+                    <td><a href="<?=base_url('dokumen/detailPublikasi')?>/<?=$pub['id_doc_publikasi']?>" target="_blank" class="btn btn-sm btn-info">detail</a></td>
                 </tr>
+            <?php endforeach?>
             </tbody>
             
         </table>

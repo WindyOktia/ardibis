@@ -7,32 +7,28 @@
             <thead class="thead-dark">
                 <tr>
                     <th>No</th>
-                    <th>NIP</th>
                     <th>Nama</th>
-                    <th>No Sertifikasi</th>
-                    <th>Pendidikan</th>
-                    <th>Keahlian</th>
+                    <th>Tema PKM</th>
+                    <th>Judul Kegiatan</th>
+                    <th>Bentuk Integrasi</th>
+                    <th>Tahun Akademik</th>
                     <th>Semester</th>
-                    <th>Matakuliah</th>
-                    <th>RPS</th>
-                    <th>RPP</th>
                     <th>Detail</th>
                 </tr>
             </thead>
             <tbody>
+            <?php $i=1; foreach($pengabdian as $abdi):?>
                 <tr>
-                    <td>1</td>
-                    <td>1234</td>
-                    <td>John Doe</td>
-                    <td>1432</td>
-                    <td>S2</td>
-                    <td>Lorem</td>
-                    <td>Lorem</td>
-                    <td>Lorem</td>
-                    <td>Lorem</td>
-                    <td>Lorem</td>
-                    <td><a href="<?=base_url('dokumen/detailPengabdian')?>" class="btn btn-sm btn-info">detail</a></td>
+                    <td><?=$i++?></td>
+                    <td><?=$abdi['nama_dosen']?></td>
+                    <td><?=$abdi['tema_PKM']?></td>
+                    <td><?=$abdi['judul_kegiatan']?></td>
+                    <td><?=$abdi['bentuk_integrasi']?></td>
+                    <td><?=$abdi['tahun_akademik']?></td>
+                    <td><?php if($abdi['semester']=='2'){echo 'Genap';}else{echo 'Ganjil' ;};?></td>
+                    <td><a href="<?=base_url('dokumen/detailPengabdian')?>/<?=$abdi['id_doc_pengabdian']?>" target="_blank" class="btn btn-sm btn-info">detail</a></td>
                 </tr>
+                <?php endforeach?>
             </tbody>
             
         </table>
