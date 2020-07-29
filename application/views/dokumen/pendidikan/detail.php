@@ -4,7 +4,7 @@
         <a href="#" class="btn btn-sm btn-success">Upload Dokumen</a>
     </div>
     <div class="col">
-        <a href="#" class="btn btn-sm btn-light float-right tombol-hapus">! Hapus data arsip</a>
+        <a href="<?=base_url('dokumen/deleteData')?>/doc_pendidikan/<?=$id?>" class="btn btn-sm btn-light float-right tombol-hapus">! Hapus data arsip</a>
     </div>
 </div>
 <div class="card card-body mt-2">
@@ -77,7 +77,7 @@
     <div class="card card-body border-success">
         <div class="row">
             <div class="col"><b>Nama dokumen : <?=$doc['nama_dokumen']?> </b> <br></div>
-            <div class="col"><a href="<?=base_url('dokumen/deleteDocument')?>/<?=$doc['id_trans_document']?>/detailPendidikan/<?= $pdd['id_doc_pendidikan']?>" class="btn btn-sm btn-danger float-right tombol-hapus">hapus dokumen <?=$doc['nama_dokumen']?> </a></div>
+            <div class="col"><a href="<?=base_url('dokumen/deleteDocument')?>/<?=$doc['id_trans_document']?>/detailPendidikan/<?= $pdd['id_doc_pendidikan']?>/<?=$doc['link_file']?>" class="btn btn-sm btn-danger float-right tombol-hapus">hapus dokumen <?=$doc['nama_dokumen']?> </a></div>
         </div>
         Jenis Dokumen : <?=$doc['tipe']?><br>
         <span>Link Download : <a href="<?= base_url('dokumen/downloadDocument')?>/<?=$doc['link_file']?>">Download File</a></span>

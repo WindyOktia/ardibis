@@ -4,7 +4,7 @@
         <a href="#" class="btn btn-sm btn-success">Upload Dokumen</a>
     </div>
     <div class="col">
-        <a href="#" class="btn btn-sm btn-light float-right tombol-hapus">! Hapus data arsip</a>
+        <a href="<?=base_url('dokumen/deleteData')?>/doc_penelitian/<?=$id?>" class="btn btn-sm btn-light float-right tombol-hapus">! Hapus data arsip</a>
     </div>
 </div>
 

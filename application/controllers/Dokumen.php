@@ -159,15 +159,69 @@ class Dokumen extends CI_Controller{
         force_download(FCPATH.'/document/priv/'.$file, null);
     }
 
-    public function deleteDocument($id,$backlink, $backid)
+    public function deleteDocument($id,$backlink, $backid, $link_file)
     {
         $delete=$this->dokumen->generalDeleteDoc($id);
         if($delete>0){
+            $this->deleteFiles($link_file,$backlink,$backid);
+        }else{
+            $this->session->set_flashdata('error', 'Data Gagal Dihapus');
+            redirect('dokumen/'.$backlink.'/'.$backid);
+        };
+        
+    }
+
+    public function deleteFiles($file,$backlink, $backid)
+    {
+        $del = unlink(FCPATH.'document/priv/'.$file);
+        if($del){
             $this->session->set_flashdata('success', 'Data Dihapus');
         }else{
             $this->session->set_flashdata('error', 'Data Gagal Dihapus');
         }
         redirect('dokumen/'.$backlink.'/'.$backid);
+    }
+
+    public function deleteData($table, $id)
+    {
+        if($table=='doc_pendidikan')
+        {
+            $code_id= "1".'_'.$id;
+            $backid='pendidikan';
+        }
+        elseif($table=='doc_penelitian')
+        {
+            $code_id= "2".'_'.$id;
+            $backid='penelitian';
+        }
+        elseif($table=='doc_publikasi')
+        {
+            $code_id= "3".'_'.$id;
+            $backid='publikasi';
+        }
+        elseif($table=='doc_pengabdian')
+        {
+            $code_id= "4".'_'.$id;
+            $backid='pengabdian';
+        }
+        elseif($table=='doc_kegiatan')
+        {
+            $code_id= "5".'_'.$id;
+            $backid='kegiatan';
+        }
+        elseif($table=='doc_kerjasama')
+        {
+            $code_id= "6".'_'.$id;
+            $backid='kerjasama';
+        }else
+        {
+            $code_id= "7".'_'.$id;
+            $backid='sdm';
+        };
+
+        $delMain = $this->dokumen->generalDeleteData($table,$id);
+        $delSecond = $this->dokumen->generalDeleteBulk($code_id);
+        redirect('dokumen/'.$backid);
     }
 
     // end of general access and restriction
@@ -231,6 +285,7 @@ class Dokumen extends CI_Controller{
 
         $data['pendidikan']=$this->dokumen->getPendidikanID($id);
         $data['document']=$this->dokumen->getGeneralDoc($code, $id);
+        $data['id']=$id;
 
         $this->header();
         $this->load->view('dokumen/pendidikan/detail',$data);
@@ -284,6 +339,7 @@ class Dokumen extends CI_Controller{
 
         $data['penelitian']= $this->dokumen->getPenelitianID($id);
         $data['document']=$this->dokumen->getGeneralDoc($code, $id);
+        $data['id']=$id;
         $this->load->view('dokumen/penelitian/detail',$data);
         $this->load->view('part/footer');
     }
@@ -356,6 +412,7 @@ class Dokumen extends CI_Controller{
         
         $data['publikasi']=$this->dokumen->getPublikasiID($id);
         $data['document']=$this->dokumen->getGeneralDoc($code, $id);
+        $data['id']=$id;
         $this->load->view('dokumen/publikasi/detail',$data);
         $this->load->view('part/footer');
     }
@@ -417,6 +474,7 @@ class Dokumen extends CI_Controller{
         $code="4";
         $data['pengabdian']= $this->dokumen->getPengabdianID($id);
         $data['document']=$this->dokumen->getGeneralDoc($code, $id);
+        $data['id']=$id;
         $this->load->view('dokumen/pengabdian/detail',$data);
         $this->load->view('part/footer');
     }
@@ -445,7 +503,7 @@ class Dokumen extends CI_Controller{
 
         $id= $this->dokumen->addPengabdian($serial_anggota, $serial_dana);
 
-        $code='4'; //penelitian
+        $code='4'; //pengabdian
         $backid='pengabdian'; // link redirect
         $this->generalUpload($id,$code,$backid);
     }
@@ -459,7 +517,9 @@ class Dokumen extends CI_Controller{
         $this->roleRedirect($roleAcc);
 
         $this->header();
-        $this->load->view('dokumen/kegiatan/kegiatan');
+
+        $data['kegiatan']= $this->dokumen->getKegiatan();
+        $this->load->view('dokumen/kegiatan/kegiatan',$data);
         $this->load->view('part/footer');
     }
 
@@ -469,18 +529,53 @@ class Dokumen extends CI_Controller{
         $this->roleRedirect($roleAcc);
 
         $this->header();
-        $this->load->view('dokumen/kegiatan/add');
+        $data['dosen']=$this->pengaturan->getDosen();
+        $this->load->view('dokumen/kegiatan/add',$data);
         $this->load->view('part/footer');
     }
 
-    public function detailKegiatan()
+    public function detailKegiatan($id)
     {
         $roleAcc="kegiatan";
         $this->roleRedirect($roleAcc);
 
         $this->header();
-        $this->load->view('dokumen/kegiatan/detail');
+
+        $code="5";
+        $data['kegiatan']= $this->dokumen->getKegiatanID($id);
+        $data['document']=$this->dokumen->getGeneralDoc($code, $id);
+        $data['id']=$id;
+        $this->load->view('dokumen/kegiatan/detail',$data);
         $this->load->view('part/footer');
+    }
+
+    public function do_addKegiatan()
+    {   
+        if($_POST['anggota']){
+            $arr_anggota = array();
+            foreach ($_POST['anggota'] as $key => $value) {
+              $arr_anggota[$key]['anggota'] =  $_POST['anggota'][$key];
+              $arr_anggota[$key]['no_identitas'] =  $_POST['no_identitas'][$key];
+              $arr_anggota[$key]['nama_anggota'] = $_POST['nama_anggota'][$key];
+              $arr_anggota[$key]['keterangan'] = $_POST['keterangan'][$key];
+            }
+            $serial_anggota = serialize($arr_anggota);
+        }else{
+            $serial_anggota="no_data";
+        }
+
+        $arr_dana = array();
+        foreach ($_POST['sumber_dana'] as $key => $value) {
+          $arr_dana[$key]['sumber_dana'] =  $_POST['sumber_dana'][$key];
+          $arr_dana[$key]['jumlah'] = $_POST['jumlah'][$key];
+        }
+        $serial_dana = serialize($arr_dana);
+
+        $id= $this->dokumen->addKegiatan($serial_anggota, $serial_dana);
+
+        $code='5'; //kegiatan
+        $backid='kegiatan'; // link redirect
+        $this->generalUpload($id,$code,$backid);
     }
 
     // end of kegiatan
@@ -492,7 +587,8 @@ class Dokumen extends CI_Controller{
         $this->roleRedirect($roleAcc);
 
         $this->header();
-        $this->load->view('dokumen/kerjasama/kerjasama');
+        $data['kerjasama']=$this->dokumen->getKerjasama();
+        $this->load->view('dokumen/kerjasama/kerjasama',$data);
         $this->load->view('part/footer');
     }
 
@@ -502,18 +598,53 @@ class Dokumen extends CI_Controller{
         $this->roleRedirect($roleAcc);
 
         $this->header();
-        $this->load->view('dokumen/kerjasama/add');
+        $data['dosen']=$this->pengaturan->getDosen();
+        $this->load->view('dokumen/kerjasama/add',$data);
         $this->load->view('part/footer');
     }
 
-    public function detailKerjasama()
+    public function detailKerjasama($id)
     {
         $roleAcc="kerjasama";
         $this->roleRedirect($roleAcc);
 
         $this->header();
-        $this->load->view('dokumen/kerjasama/detail');
+
+        $code="6";
+        $data['kerjasama']= $this->dokumen->getKerjasamaID($id);
+        $data['document']=$this->dokumen->getGeneralDoc($code, $id);
+        $data['id']=$id;
+        $this->load->view('dokumen/kerjasama/detail',$data);
         $this->load->view('part/footer');
+    }
+
+    public function do_addKerjasama()
+    {
+        if($_POST['anggota']){
+            $arr_anggota = array();
+            foreach ($_POST['anggota'] as $key => $value) {
+              $arr_anggota[$key]['anggota'] =  $_POST['anggota'][$key];
+              $arr_anggota[$key]['no_identitas'] =  $_POST['no_identitas'][$key];
+              $arr_anggota[$key]['nama_anggota'] = $_POST['nama_anggota'][$key];
+              $arr_anggota[$key]['keterangan'] = $_POST['keterangan'][$key];
+            }
+            $serial_anggota = serialize($arr_anggota);
+        }else{
+            $serial_anggota="no_data";
+        }
+
+        $arr_dana = array();
+        foreach ($_POST['sumber_dana'] as $key => $value) {
+          $arr_dana[$key]['sumber_dana'] =  $_POST['sumber_dana'][$key];
+          $arr_dana[$key]['jumlah'] = $_POST['jumlah'][$key];
+        }
+        $serial_dana = serialize($arr_dana);
+
+        $id= $this->dokumen->addKerjasama($serial_anggota, $serial_dana);
+
+        $code='6'; //kerjasama
+        $backid='kerjasama'; // link redirect
+        $this->generalUpload($id,$code,$backid);
     }
 
     // end of kerjasama
@@ -525,7 +656,8 @@ class Dokumen extends CI_Controller{
         $this->roleRedirect($roleAcc);
 
         $this->header();
-        $this->load->view('dokumen/sdm/sdm');
+        $data['sdm']=$this->dokumen->getSDM();
+        $this->load->view('dokumen/sdm/sdm',$data);
         $this->load->view('part/footer');
     }
 
@@ -535,18 +667,33 @@ class Dokumen extends CI_Controller{
         $this->roleRedirect($roleAcc);
 
         $this->header();
-        $this->load->view('dokumen/sdm/add');
+       
+        $data['dosen']=$this->pengaturan->getDosen();
+        $this->load->view('dokumen/sdm/add',$data);
         $this->load->view('part/footer');
     }
 
-    public function detailSdm()
+    public function detailSdm($id)
     {
         $roleAcc="sdm";
         $this->roleRedirect($roleAcc);
 
         $this->header();
-        $this->load->view('dokumen/sdm/detail');
+        $code="7";
+        $data['sdm']=$this->dokumen->getSDMID($id);
+        $data['document']=$this->dokumen->getGeneralDoc($code, $id);
+        $data['id']=$id;
+        $this->load->view('dokumen/sdm/detail',$data);
         $this->load->view('part/footer');
+    }
+
+    public function do_addSDM()
+    {
+        $id= $this->dokumen->addSDM();
+
+        $code='7'; //sdm
+        $backid='sdm'; // link redirect
+        $this->generalUpload($id,$code,$backid);
     }
 
     // end of sdm

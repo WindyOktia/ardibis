@@ -7,32 +7,26 @@
             <thead class="thead-dark">
                 <tr>
                     <th>No</th>
-                    <th>NIP</th>
                     <th>Nama</th>
-                    <th>No Sertifikasi</th>
-                    <th>Pendidikan</th>
-                    <th>Keahlian</th>
+                    <th>Tema Penunjang</th>
+                    <th>Judul Kegiatan</th>
+                    <th>Tahun Akademik</th>
                     <th>Semester</th>
-                    <th>Matakuliah</th>
-                    <th>RPS</th>
-                    <th>RPP</th>
                     <th>Detail</th>
                 </tr>
             </thead>
             <tbody>
+            <?php $i=1; foreach($kegiatan as $pen):?>
                 <tr>
-                    <td>1</td>
-                    <td>1234</td>
-                    <td>John Doe</td>
-                    <td>1432</td>
-                    <td>S2</td>
-                    <td>Lorem</td>
-                    <td>Lorem</td>
-                    <td>Lorem</td>
-                    <td>Lorem</td>
-                    <td>Lorem</td>
-                    <td><a href="<?=base_url('dokumen/detailKegiatan')?>" class="btn btn-sm btn-info">detail</a></td>
+                    <td><?=$i++?></td>
+                    <td><?= $pen['nama_dosen']?></td>
+                    <td><?= $pen['tema_penunjang']?></td>
+                    <td><?= $pen['judul_kegiatan']?></td>
+                    <td><?= $pen['tahun_akademik']?></td>
+                    <td><?php if($pen['semester']=='2'){echo 'Genap';}else{echo 'Ganjil' ;};?></td>
+                    <td><a href="<?=base_url('dokumen/detailKegiatan')?>/<?= $pen['id_doc_kegiatan']?>" target="_blank" class="btn btn-sm btn-info">detail</a></td>
                 </tr>
+            <?php endforeach?>
             </tbody>
             
         </table>

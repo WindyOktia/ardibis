@@ -77,6 +77,18 @@ class Dokumen_model extends CI_Model
         return $this->db->affected_rows();
     }
 
+    public function generalDeleteData($table, $id)
+    {
+        $this->db->delete($table,['id_'.$table=>$id]);
+        return $this->db->affected_rows();
+    }
+
+    public function generalDeleteBulk($code_id)
+    {
+        $this->db->delete('trans_document',['code_id'=>$code_id]);
+        return $this->db->affected_rows();
+    }
+
     public function addPendidikan()
     {
         $data=[
@@ -210,6 +222,105 @@ class Dokumen_model extends CI_Model
         $this->db->where('id_doc_pengabdian', $id);
         return $this->db->get('doc_pengabdian')->result_array();
     }
+
+    public function addKegiatan($serial_anggota,$serial_dana)
+    {
+        $data=[
+            'id_dosen'=>$_POST['id_dosen'],
+            'tema_penunjang'=>$_POST['tema_penunjang'],
+            'anggota'=>$serial_anggota,
+            'judul_kegiatan'=>$_POST['judul_kegiatan'],
+            'tahun_akademik'=>$_POST['tahun_akademik_1'].'/'.$_POST['tahun_akademik_2'],
+            'semester'=>$_POST['semester'],
+            'sumber_dana'=>$serial_dana,
+            'keterangan_pelaksanaan'=>$_POST['keterangan_pelaksanaan']
+        ];
+        $this->db->insert('doc_kegiatan',$data);
+        $package_id = $this->db->insert_id();
+        return $package_id;
+    }
+
+    public function getKegiatan()
+    {
+        $this->db->select('doc_kegiatan.*, dosen.nip, dosen.nidn, dosen.nama_dosen');
+        $this->db->join('dosen', 'doc_kegiatan.id_dosen = dosen.id_dosen');
+        return $this->db->get('doc_kegiatan')->result_array();
+    }
+
+    public function getKegiatanID($id)
+    {
+        $this->db->select('doc_kegiatan.*, dosen.nip, dosen.nidn, dosen.nama_dosen');
+        $this->db->join('dosen', 'doc_kegiatan.id_dosen = dosen.id_dosen');
+        $this->db->where('id_doc_kegiatan', $id);
+        return $this->db->get('doc_kegiatan')->result_array();
+    }
+
+    public function addKerjasama($serial_anggota,$serial_dana)
+    {
+        $data=[
+            'id_dosen'=>$_POST['id_dosen'],
+            'tema_kerjasama'=>$_POST['tema_kerjasama'],
+            'anggota'=>$serial_anggota,
+            'judul_kegiatan'=>$_POST['judul_kegiatan'],
+            'tahun_akademik'=>$_POST['tahun_akademik_1'].'/'.$_POST['tahun_akademik_2'],
+            'semester'=>$_POST['semester'],
+            'sumber_dana'=>$serial_dana,
+            'keterangan_pelaksanaan'=>$_POST['keterangan_pelaksanaan']
+        ];
+        $this->db->insert('doc_kerjasama',$data);
+        $package_id = $this->db->insert_id();
+        return $package_id;
+    }
+
+    public function getKerjasama()
+    {
+        $this->db->select('doc_kerjasama.*, dosen.nip, dosen.nidn, dosen.nama_dosen');
+        $this->db->join('dosen', 'doc_kerjasama.id_dosen = dosen.id_dosen');
+        return $this->db->get('doc_kerjasama')->result_array();
+    }
+
+    public function getKerjasamaID($id)
+    {
+        $this->db->select('doc_kerjasama.*, dosen.nip, dosen.nidn, dosen.nama_dosen');
+        $this->db->join('dosen', 'doc_kerjasama.id_dosen = dosen.id_dosen');
+        $this->db->where('id_doc_kerjasama', $id);
+        return $this->db->get('doc_kerjasama')->result_array();
+    }
+
+    public function addSDM()
+    {
+        $data=[
+            'id_dosen'=>$_POST['id_dosen'],
+            'no_sertifikasi'=>$_POST['no_sertifikasi'],
+            'alamat'=>$_POST['alamat'],
+            'prodi'=>$_POST['prodi'],
+            'jabatan'=>$_POST['jabatan'],
+            'jafung'=>$_POST['jafung'],
+            'TMT'=>$_POST['TMT'],
+            'pangkat'=>$_POST['pangkat'],
+            'TMT_2'=>$_POST['TMT_2'],
+            'rekomendasi'=>$_POST['rekomendasi']
+        ];
+        $this->db->insert('doc_sdm',$data);
+        $package_id = $this->db->insert_id();
+        return $package_id;
+    }
+
+    public function getSDM()
+    {
+        $this->db->select('doc_sdm.*, dosen.nip, dosen.nidn, dosen.nama_dosen');
+        $this->db->join('dosen', 'doc_sdm.id_dosen = dosen.id_dosen');
+        return $this->db->get('doc_sdm')->result_array();
+    }
+
+    public function getSDMID($id)
+    {
+        $this->db->select('doc_sdm.*, dosen.nip, dosen.nidn, dosen.nama_dosen');
+        $this->db->join('dosen', 'doc_sdm.id_dosen = dosen.id_dosen');
+        $this->db->where('id_doc_sdm', $id);
+        return $this->db->get('doc_sdm')->result_array();
+    }
+
 
 
    

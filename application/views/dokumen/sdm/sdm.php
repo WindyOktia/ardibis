@@ -7,32 +7,26 @@
             <thead class="thead-dark">
                 <tr>
                     <th>No</th>
-                    <th>NIP</th>
                     <th>Nama</th>
-                    <th>No Sertifikasi</th>
-                    <th>Pendidikan</th>
-                    <th>Keahlian</th>
-                    <th>Semester</th>
-                    <th>Matakuliah</th>
-                    <th>RPS</th>
-                    <th>RPP</th>
+                    <th>NIP / NIDN</th>
+                    <th>Prodi</th>
+                    <th>Jabatan</th>
+                    <th>Rekomendasi</th>
                     <th>Detail</th>
                 </tr>
             </thead>
             <tbody>
+            <?php $i=1; foreach($sdm as $pen):?>
                 <tr>
-                    <td>1</td>
-                    <td>1234</td>
-                    <td>John Doe</td>
-                    <td>1432</td>
-                    <td>S2</td>
-                    <td>Lorem</td>
-                    <td>Lorem</td>
-                    <td>Lorem</td>
-                    <td>Lorem</td>
-                    <td>Lorem</td>
-                    <td><a href="<?=base_url('dokumen/detailSdm')?>" class="btn btn-sm btn-info">detail</a></td>
+                    <td><?=$i++?></td>
+                    <td><?= $pen['nama_dosen']?></td>
+                    <td><?= $pen['nip']?> / <?= $pen['nidn']?></td>
+                    <td><?= $pen['prodi']?></td>
+                    <td><?= $pen['jabatan']?></td>
+                    <td><?= $pen['rekomendasi']?></td>
+                    <td><a href="<?=base_url('dokumen/detailSdm')?>/<?= $pen['id_doc_sdm']?>" target="_blank" class="btn btn-sm btn-info">detail</a></td>
                 </tr>
+            <?php endforeach?>
             </tbody>
             
         </table>
